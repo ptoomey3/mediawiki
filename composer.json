@@ -21,7 +21,7 @@
 		"leafo/lessphp": "0.5.0",
 		"liuggio/statsd-php-client": "1.0.16",
 		"mediawiki/at-ease": "1.0.0",
-		"oojs/oojs-ui": "0.12.2",
+		"oojs/oojs-ui": "0.12.4",
 		"php": ">=5.3.3",
 		"psr/log": "1.0.0",
 		"wikimedia/cdb": "1.0.1",
@@ -38,12 +38,14 @@
 		"mediawiki/mediawiki-codesniffer": "0.3.0"
 	},
 	"suggest": {
-		"ext-fileinfo": "*",
-		"ext-intl": "*",
-		"ext-mbstring": "*",
-		"ext-wikidiff2": "*",
-		"ext-apc": "*",
-		"monolog/monolog": "*"
+		"ext-fileinfo": "Improved mime magic detection",
+		"ext-intl": "ICU integration",
+		"ext-mbstring": "Multibyte string support",
+		"ext-wikidiff2": "Diff accelerator",
+		"ext-apc": "Local data and opcode cache",
+		"monolog/monolog": "Flexible debug logging system",
+		"pear/mail": "Mail sending support",
+		"pear/mail_mime": "Mail sending support"
 	},
 	"autoload": {
 		"psr-0": {

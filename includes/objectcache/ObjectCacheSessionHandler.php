@@ -30,6 +30,9 @@ use MediaWiki\Logger\LoggerFactory;
  * @ingroup Cache
  */
 class ObjectCacheSessionHandler {
+	/** @var array Map of (session ID => SHA-1 of the data) */
+	protected static $hashCache = array();
+
 	/**
 	 * Install a session handler for the current web request
 	 */
@@ -55,6 +58,7 @@ class ObjectCacheSessionHandler {
 	 */
 	protected static function getCache() {
 		global $wgSessionCacheType;
+
 		return ObjectCache::getInstance( $wgSessionCacheType );
 	}
 
@@ -66,6 +70,14 @@ class ObjectCacheSessionHandler {
 	 */
 	protected static function getKey( $id ) {
 		return wfMemcKey( 'session', $id );
+	}
+
+	/**
+	 * @param mixed $data
+	 * @return string
+	 */
+	protected static function getHash( $data ) {
+		return sha1( serialize( $data ) );
 	}
 
 	/**
@@ -96,11 +108,15 @@ class ObjectCacheSessionHandler {
 	 * @return mixed Session data
 	 */
 	static function read( $id ) {
+		$stime = microtime( true );
 		$data = self::getCache()->get( self::getKey( $id ) );
-		if ( $data === false ) {
-			return '';
-		}
-		return $data;
+		$real = microtime( true ) - $stime;
+
+		RequestContext::getMain()->getStats()->timing( "session.read", $real );
+
+		self::$hashCache = array( $id => self::getHash( $data ) );
+
+		return ( $data === false ) ? '' : $data;
 	}
 
 	/**
@@ -112,7 +128,18 @@ class ObjectCacheSessionHandler {
 	 */
 	static function write( $id, $data ) {
 		global $wgObjectCacheSessionExpiry;
-		self::getCache()->set( self::getKey( $id ), $data, $wgObjectCacheSessionExpiry );
+
+		// Only issue a write if anything changed (PHP 5.6 already does this)
+		if ( !isset( self::$hashCache[$id] )
+			|| self::getHash( $data ) !== self::$hashCache[$id]
+		) {
+			$stime = microtime( true );
+			self::getCache()->set( self::getKey( $id ), $data, $wgObjectCacheSessionExpiry );
+			$real = microtime( true ) - $stime;
+
+			RequestContext::getMain()->getStats()->timing( "session.write", $real );
+		}
+
 		return true;
 	}
 
@@ -123,7 +150,11 @@ class ObjectCacheSessionHandler {
 	 * @return bool Success
 	 */
 	static function destroy( $id ) {
+		$stime = microtime( true );
 		self::getCache()->delete( self::getKey( $id ) );
+		$real = microtime( true ) - $stime;
+
+		RequestContext::getMain()->getStats()->timing( "session.destroy", $real );
 
 		return true;
 	}

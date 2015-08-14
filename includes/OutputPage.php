@@ -3050,10 +3050,6 @@ class OutputPage extends ContextSource {
 			ResourceLoaderModule::TYPE_SCRIPTS
 		);
 
-		if ( $this->getConfig()->get( 'ResourceLoaderExperimentalAsyncLoading' ) ) {
-			$links[] = $this->getScriptsForBottomQueue();
-		}
-
 		return self::getHtmlFromLoaderLinks( $links );
 	}
 

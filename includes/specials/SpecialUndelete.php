@@ -771,6 +771,8 @@ class SpecialUndelete extends SpecialPage {
 	}
 
 	function execute( $par ) {
+		$this->useTransactionalTimeLimit();
+
 		$user = $this->getUser();
 
 		$this->setHeaders();
@@ -999,7 +1001,7 @@ class SpecialUndelete extends SpecialPage {
 			return;
 		}
 
-		if ( $this->mPreview || !$isText ) {
+		if ( ( $this->mPreview || !$isText ) && $content ) {
 			// NOTE: non-text content has no source view, so always use rendered preview
 
 			// Hide [edit]s

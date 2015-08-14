@@ -124,6 +124,7 @@ class Preferences {
 
 		$disable = !$user->isAllowed( 'editmyoptions' );
 
+		$defaultOptions = User::getDefaultOptions();
 		## Prod in defaults from the user
 		foreach ( $defaultPreferences as $name => &$info ) {
 			$prefFromUser = self::getOptionFromUser( $name, $info, $user );
@@ -131,7 +132,6 @@ class Preferences {
 				$info['disabled'] = 'disabled';
 			}
 			$field = HTMLForm::loadInputFromParameters( $name, $info, $dummyForm ); // For validation
-			$defaultOptions = User::getDefaultOptions();
 			$globalDefault = isset( $defaultOptions[$name] )
 				? $defaultOptions[$name]
 				: null;
@@ -888,6 +888,12 @@ class Preferences {
 			'section' => 'rc/advancedrc',
 		);
 
+		$defaultPreferences['hidecategorization'] = array(
+			'type' => 'toggle',
+			'label-message' => 'tog-hidecategorization',
+			'section' => 'rc/advancedrc',
+		);
+
 		if ( $user->useRCPatrol() ) {
 			$defaultPreferences['hidepatrolled'] = array(
 				'type' => 'toggle',
@@ -993,6 +999,12 @@ class Preferences {
 			'type' => 'toggle',
 			'section' => 'watchlist/advancedwatchlist',
 			'label-message' => 'tog-watchlisthideliu',
+		);
+
+		$defaultPreferences['watchlisthidecategorization'] = array(
+			'type' => 'toggle',
+			'section' => 'watchlist/advancedwatchlist',
+			'label-message' => 'tog-watchlisthidecategorization',
 		);
 
 		if ( $user->useRCPatrol() ) {
